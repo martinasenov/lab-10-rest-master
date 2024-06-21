@@ -1,13 +1,25 @@
 package com.cydeo.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.cydeo.dto.ResponseWrapper;
+import com.cydeo.dto.StudentDTO;
+import com.cydeo.entity.Student;
+import com.cydeo.service.StudentService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/student")
 public class StudentController {
 
-     /*
+    private final StudentService studentService;
+
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
+    }
+
+
+    /*
            Endpoint: /api/v1/student
            HTTP Status Code: 200
 
@@ -17,6 +29,23 @@ public class StudentController {
            "code":200
            "data":<students data>
      */
+
+    @GetMapping
+    public ResponseEntity<ResponseWrapper> getAllStudents(){
+
+     return ResponseEntity.ok(new ResponseWrapper("Students are successfully retrieved",studentService.findAll()));
+
+    }
+
+
+
+
+    @PostMapping
+    public ResponseEntity<ResponseWrapper> createStudent(@RequestBody StudentDTO studentDTO) {
+        StudentDTO createdStudent = studentService.createStudent(studentDTO);
+        ResponseWrapper responseWrapper = new ResponseWrapper("Student is successfully created.", createdStudent, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseWrapper);
+    }
 
 
 
