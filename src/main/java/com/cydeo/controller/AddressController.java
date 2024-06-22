@@ -2,6 +2,7 @@ package com.cydeo.controller;
 import com.cydeo.dto.AddressDTO;
 import com.cydeo.dto.ResponseWrapper;
 import com.cydeo.service.AddressService;
+import com.cydeo.service.impl.FlagService;
 import com.cydeo.service.impl.TemperatureService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,14 +13,15 @@ public class AddressController {
 
     private final AddressService addressService;
     private final TemperatureService temperatureService;
+    private final FlagService flagService;
 
-    public AddressController(AddressService addressService, TemperatureService temperatureService) {
+    public AddressController(AddressService addressService, TemperatureService temperatureService, FlagService flagService) {
         this.addressService = addressService;
         this.temperatureService = temperatureService;
+        this.flagService = flagService;
     }
 
-
-     /*
+    /*
      Endpoint: /api/v1/address/{addressNo}
      HTTP Status Code: 200
 
@@ -34,6 +36,7 @@ public class AddressController {
     public ResponseEntity<ResponseWrapper> getAddressByNo(@PathVariable String addressNo) {
         AddressDTO addressDTO = addressService.findByAddressNo(addressNo);
         addressDTO.setCurrentTemperature(temperatureService.getTemperature(addressDTO.getCity()));
+        addressDTO.setFlag(flagService.getFlag(addressDTO.getCountry()));
 
         ResponseWrapper responseWrapper = new ResponseWrapper("Address " + addressNo + " is successfully retrieved.", addressDTO);
         responseWrapper.setCode(200);
